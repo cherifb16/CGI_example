@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  </head>
+  <body>
+
+    <% require 'pg' %>
+
+    <% connection = PG::connect(dbname: "goya") %>
+    <% connection.internal_encoding = "UTF-8" %>
+    
+
+    <% result = connection.exec("select * FROM crops WHERE give_for !='自家消費';") %>
+    <% data = [] %>
+    <% result.each do |record| %>
+    
+    <% data<< "ゴーヤの長さ：#{record["length"]} ゴーヤの大きさ：#{record["weight"]}　クオリティ：#{record["quality"]} 売った相手：#{record["give_for"]} 日付：#{record["date"]}" %>
+    <% end %>
+
+    <form action="kadai.cgi" method="POST">
+       自家消費ではない　goyaの情報を表示します<br>
+
+       <input type="text" name="kadai" value="<%= data.join('*') %>">
+       <input type="submit" name="kadai") >
+       
+    </form>
+
+    <% result = connection.exec("select * FROM crops WHERE quality=False;") %>
+       <% data = [] %>
+    <% result.each do |record| %>
+      <% data << "ゴーヤの長さ：#{record["length"]} ゴーヤの大きさ：#{record["weight"]}　クオリティ：#{record["quality"]} 
+      売った相手：#{record["give_for"]} 日付：#{record["date"]}" %>
+    <% end %>
+
+
+    <form action="kadai2.cgi" method="POST">
+       下記のボタンを押すと、品質が悪いデータを表示させます。<br><br>
+       <!-- valueには、送りたいデータを代入する -->
+       <!-- name="goya"を、情報の目印とする -->
+       
+      <input type="text" name="kadai2" value="<%= data.join('*') %>">
+      <input type="submit" name="kadai2" >
+   
+    </form>
+  </body>
+</html>
